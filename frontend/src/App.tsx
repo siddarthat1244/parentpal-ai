@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import AppLayout from "./components/AppLayout";
+import AppLayout from "./components/layout/AppLayout";
 import HomePage from "./pages/HomePage";
 import AskPage from "./pages/AskPage";
 
