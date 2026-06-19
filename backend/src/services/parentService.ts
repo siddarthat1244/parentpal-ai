@@ -1,6 +1,9 @@
-export const generateParentAnswer = (
+import { GroqProvider } from "../ai/groqProvider";
+
+export const generateParentAnswer = async (
   childAge: string,
   question: string
-): string => {
-  return `For a ${childAge}-year-old child, here is a helpful starting point: ${question}. Watch for patterns, keep notes, and contact your pediatrician if symptoms continue or get worse.`;
+): Promise<string> => {
+  const aiProvider = new GroqProvider();
+  return aiProvider.generateParentAnswer(childAge, question);
 };

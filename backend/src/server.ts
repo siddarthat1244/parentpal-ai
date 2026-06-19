@@ -1,7 +1,14 @@
 import dotenv from "dotenv";
-import app from "./app";
 
-dotenv.config();
+const result = dotenv.config();
+
+console.log("dotenv loaded:", result.error ? result.error.message : "success");
+console.log(
+  "GROQ key loaded:",
+  process.env.GROQ_API_KEY ? "yes" : "no"
+);
+
+import app from "./app";
 
 const PORT = process.env.PORT || 8080;
 
