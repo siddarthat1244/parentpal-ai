@@ -14,6 +14,7 @@ import ChatIcon from "@mui/icons-material/Chat";
 import ChildCareIcon from "@mui/icons-material/ChildCare";
 import RestaurantIcon from "@mui/icons-material/Restaurant";
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 export const drawerWidth = 260;
 
@@ -47,10 +48,10 @@ function Sidebar() {
           <ListItemText primary="AI Chat" />
         </ListItemButton>
 
-        <ListItemButton>
-          <ListItemIcon><AutoStoriesIcon /></ListItemIcon>
-          <ListItemText primary="Stories" />
-        </ListItemButton>
+        <ListItemButton component={Link} to="/stories">
+        <ListItemIcon><AutoStoriesIcon /></ListItemIcon>
+        <ListItemText primary="Stories" />
+      </ListItemButton>
 
         <ListItemButton>
           <ListItemIcon><RestaurantIcon /></ListItemIcon>
@@ -60,6 +61,10 @@ function Sidebar() {
         <ListItemButton component={Link} to="/child-profile">
         <ListItemIcon><ChildCareIcon /></ListItemIcon>
         <ListItemText primary="Child Profile" />
+      </ListItemButton>
+      <ListItemButton component={Link} to="/favorite-stories">
+       <ListItemIcon><FavoriteIcon /></ListItemIcon>
+      <ListItemText primary="Favorites" />
       </ListItemButton>
       </List>
     </Drawer>

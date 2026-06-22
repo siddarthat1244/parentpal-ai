@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import parentRoutes from "./routes/parentRoutes";
+import storyRoutes from "./routes/storyRoutes";
 
 const app = express();
 
@@ -12,5 +13,6 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/api/parent", parentRoutes);
+app.use("/api/story", storyRoutes);
 
 export default app;

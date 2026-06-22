@@ -4,4 +4,6 @@ export interface AIProvider {
     question: string,
     childProfile?: unknown
   ): Promise<string>;
+
+  generateGenericResponse(prompt: string): Promise<string>;
 }

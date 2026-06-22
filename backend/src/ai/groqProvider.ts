@@ -62,4 +62,27 @@ Rules:
       "Sorry, I could not generate a response."
     );
   }
+  async generateGenericResponse(prompt: string): Promise<string> {
+  const completion = await this.client.chat.completions.create({
+    model: process.env.GROQ_MODEL || "llama-3.1-8b-instant",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are ParentPal AI, a warm, safe, creative assistant for parents and children.",
+      },
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+    temperature: 0.8,
+    max_tokens: 900,
+  });
+
+  return (
+    completion.choices[0]?.message?.content ||
+    "Sorry, I could not generate a story."
+  );
+}
 }
