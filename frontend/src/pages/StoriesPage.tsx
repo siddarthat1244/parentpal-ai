@@ -35,6 +35,8 @@ import {
 } from "../utils/storyActions";
 import { readStoryAloud, stopReadingAloud } from "../utils/readAloud";
 import StoryTypeSelector from "../components/story/StoryTypeSelector";
+import CollectionSelector from "../components/story/CollectionSelector";
+import StorySelector from "../components/story/StorySelector";
 
 function StoriesPage() {
   const activeChild = getActiveChildProfile();
@@ -44,6 +46,8 @@ function StoriesPage() {
   const [moral, setMoral] = useState("Kindness");
   const [customTheme, setCustomTheme] = useState("");
   const [storyType, setStoryType] = useState("Imagination");
+  const [collection, setCollection] =
+    useState("imagination");
 
   const { story, loading, error, createStory } = useStory();
 
@@ -87,12 +91,16 @@ function StoriesPage() {
       >
         <CardContent sx={{ p: 5 }}>
           <StoryTypeSelector value={storyType} onChange={setStoryType} />
-          <ThemeSelector
+         <CollectionSelector
+            value={collection}
+            onChange={setCollection}
+        />
+
+        <StorySelector
+            collectionId={collection}
             value={theme}
-            customTheme={customTheme}
             onChange={setTheme}
-            onCustomThemeChange={setCustomTheme}
-            />
+        />
 
           <LengthSelector value={length} onChange={setLength} />
 
