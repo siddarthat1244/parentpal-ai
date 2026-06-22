@@ -21,7 +21,8 @@ import PrintIcon from "@mui/icons-material/Print";
 import DownloadIcon from "@mui/icons-material/Download";
 
 import PageHeader from "../components/ui/PageHeader";
-import ThemeSelector from "../components/story/ThemeSelector";
+import CollectionSelector from "../components/story/CollectionSelector";
+import StorySelector from "../components/story/StorySelector";
 import LengthSelector from "../components/story/LengthSelector";
 import MoralSelector from "../components/story/MoralSelector";
 import StoryLoading from "../components/story/StoryLoading";
@@ -34,20 +35,15 @@ import {
   downloadStoryAsPdf,
 } from "../utils/storyActions";
 import { readStoryAloud, stopReadingAloud } from "../utils/readAloud";
-import StoryTypeSelector from "../components/story/StoryTypeSelector";
-import CollectionSelector from "../components/story/CollectionSelector";
-import StorySelector from "../components/story/StorySelector";
 
 function StoriesPage() {
   const activeChild = getActiveChildProfile();
 
-  const [theme, setTheme] = useState("Space");
+  const [collection, setCollection] = useState("imagination");
+  const [theme, setTheme] = useState("Space Adventure");
+  const [customTheme, setCustomTheme] = useState("");
   const [length, setLength] = useState("Medium");
   const [moral, setMoral] = useState("Kindness");
-  const [customTheme, setCustomTheme] = useState("");
-  const [storyType, setStoryType] = useState("Imagination");
-  const [collection, setCollection] =
-    useState("imagination");
 
   const { story, loading, error, createStory } = useStory();
 
@@ -63,21 +59,48 @@ function StoriesPage() {
     createdAt: new Date().toISOString(),
   };
 
- const handleGenerate = async () => {
-  const finalTheme = theme === "Custom" ? customTheme.trim() : theme;
+  const handleCollectionChange = (value: string) => {
+    setCollection(value);
+    setCustomTheme("");
 
-  if (!finalTheme) {
-    return;
-  }
+    if (value === "imagination") {
+      setTheme("Space Adventure");
+      setMoral("Kindness");
+    }
 
-  await createStory(finalTheme, length, moral,storyType);
-};
+    if (value === "indian") {
+      setTheme("Lord Krishna");
+      setMoral("Devotion");
+    }
+
+    if (value === "moral") {
+      setTheme("Kindness");
+      setMoral("Kindness");
+    }
+  };
+
+  const handleGenerate = async () => {
+    const finalTheme = theme === "Custom" ? customTheme.trim() : theme;
+
+    if (!finalTheme) {
+      return;
+    }
+
+    const storyType =
+      collection === "indian"
+        ? "Mythology"
+        : collection === "moral"
+          ? "Moral Story"
+          : "Imagination";
+
+    await createStory(finalTheme, length, moral, storyType);
+  };
 
   return (
     <Box>
       <PageHeader
         title="Story Creator"
-        subtitle={`Create a magical bedtime adventure${
+        subtitle={`Choose a collection and create a magical bedtime adventure${
           activeChild ? ` for ${activeChild.name}` : ""
         }`}
       />
@@ -90,17 +113,18 @@ function StoriesPage() {
         }}
       >
         <CardContent sx={{ p: 5 }}>
-          <StoryTypeSelector value={storyType} onChange={setStoryType} />
-         <CollectionSelector
+          <CollectionSelector
             value={collection}
-            onChange={setCollection}
-        />
+            onChange={handleCollectionChange}
+          />
 
-        <StorySelector
+          <StorySelector
             collectionId={collection}
             value={theme}
+            customTheme={customTheme}
             onChange={setTheme}
-        />
+            onCustomThemeChange={setCustomTheme}
+          />
 
           <LengthSelector value={length} onChange={setLength} />
 

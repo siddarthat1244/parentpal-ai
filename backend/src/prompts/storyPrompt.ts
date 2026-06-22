@@ -6,6 +6,18 @@ interface StoryPromptInput {
   childProfile?: unknown;
 }
 
+function getChildName(childProfile?: unknown): string {
+  if (
+    childProfile &&
+    typeof childProfile === "object" &&
+    "name" in childProfile
+  ) {
+    return (childProfile as { name?: string }).name || "the child";
+  }
+
+  return "the child";
+}
+
 export function buildStoryPrompt({
   theme,
   length,
@@ -13,59 +25,85 @@ export function buildStoryPrompt({
   storyType = "Imagination",
   childProfile,
 }: StoryPromptInput): string {
-  const mythologyInstructions =
-    storyType === "Mythology"
-      ? `
-Important Story Type:
-- This should be a respectful traditional mythology / ancient story retelling.
-- Do NOT invent new events involving gods or sacred figures.
-- Use well-known traditional story elements only.
-- Keep it simple and child-friendly.
-- Avoid scary, violent, or complex scenes.
-- Explain the moral gently.
-`
-      : `
-Important Story Type:
-- This can be an imaginative fictional bedtime story.
-- You may create new characters and events.
-`;
+  const childName = getChildName(childProfile);
 
-  return `
-Create a personalized children's story.
+  if (storyType === "Mythology") {
+    return `
+You are ParentPal AI.
+
+Task:
+Retell a traditional mythology / ancient story for a young child.
+
+IMPORTANT:
+- Do NOT create a fictional adventure.
+- Do NOT make ${childName} part of the original sacred story.
+- Do NOT say ${childName} met gods, changed events, traveled with gods, or joined the story.
+- Retell a known traditional story related to: ${theme}.
+- Keep the story respectful, simple, and child-friendly.
+- Avoid scary, violent, or complex details.
+- If the exact story is broad, choose a well-known traditional episode.
+- End with a short moral for ${childName}.
 
 Child Profile:
 ${childProfile ? JSON.stringify(childProfile, null, 2) : "No child profile provided"}
 
-Story Type:
-${storyType}
+Story Topic:
+${theme}
 
-${mythologyInstructions}
+Length:
+${length}
 
-Story Requirements:
-- Theme: ${theme}
-- Length: ${length}
-- Moral lesson: ${moral || "Include a positive lesson"}
-- Use warm, gentle bedtime language.
-- Make it age-appropriate.
-- Make the child feel included only as a listener or learner if this is a mythology story.
-- End with a calming bedtime tone.
+Moral:
+${moral || "Include a gentle moral"}
 
-If this is a mythology story:
-- Do not say the child changed the original sacred story.
-- Do not make the child a god or part of the sacred event.
-- Instead say: "As ${extractChildName(childProfile)} listened to this story..."
+Format:
+Title:
+Story:
+Moral:
 `;
-}
-
-function extractChildName(childProfile?: unknown): string {
-  if (
-    childProfile &&
-    typeof childProfile === "object" &&
-    "name" in childProfile
-  ) {
-    const name = (childProfile as { name?: string }).name;
-    return name || "the child";
   }
 
-  return "the child";
+  if (storyType === "Moral Story") {
+    return `
+Create a simple child-friendly moral story.
+
+Child Profile:
+${childProfile ? JSON.stringify(childProfile, null, 2) : "No child profile provided"}
+
+Theme:
+${theme}
+
+Length:
+${length}
+
+Moral:
+${moral || theme}
+
+Rules:
+- Fictional story is allowed.
+- Keep it simple, warm, and age-appropriate.
+- End with a clear lesson.
+`;
+  }
+
+  return `
+Create a personalized imaginative bedtime story.
+
+Child Profile:
+${childProfile ? JSON.stringify(childProfile, null, 2) : "No child profile provided"}
+
+Theme:
+${theme}
+
+Length:
+${length}
+
+Moral:
+${moral || "Include a positive lesson"}
+
+Rules:
+- Creative fictional story is allowed.
+- Make the child feel included.
+- Use warm bedtime language.
+`;
 }

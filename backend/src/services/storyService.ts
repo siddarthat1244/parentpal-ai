@@ -13,16 +13,18 @@ export async function generateStory({
   theme,
   length,
   moral,
+  storyType,
   childProfile,
 }: GenerateStoryInput): Promise<string> {
   const aiProvider = new GroqProvider();
 
-  const prompt = buildStoryPrompt({
-    theme,
-    length,
-    moral,
-    childProfile,
-  });
+ const prompt = buildStoryPrompt({
+  theme,
+  length,
+  moral,
+  storyType,
+  childProfile,
+});
 
   return aiProvider.generateGenericResponse(prompt);
 }
