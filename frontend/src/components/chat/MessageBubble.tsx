@@ -39,7 +39,19 @@ function MessageBubble({ message }: Props) {
             color: isUser ? "white" : "text.primary",
           }}
         >
-          <Typography>{message.text}</Typography>
+         <Typography
+            variant="caption"
+            sx={{
+                display: "block",
+                mt: 1,
+                opacity: 0.7,
+            }}
+            >
+            {new Date(message.createdAt).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+            })}
+        </Typography>
         </Paper>
       </Box>
     </Box>

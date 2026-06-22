@@ -1,40 +1,46 @@
 import { useState } from "react";
-import { Alert, Box, Button, TextField } from "@mui/material";
+import { Alert, Box, Button } from "@mui/material";
 import ChatWindow from "./chat/ChatWindow";
 import ChatInput from "./chat/ChatInput";
-import { useChat } from "../hooks/useChat";
+import ChildChatHeader from "./chat/ChildChatHeader";
+import { useChatContext } from "../context/ChatContext";
+import type { ChildProfile } from "../types/parent";
+import { calculateAge } from "../utils/calculateAge";
+import { getActiveChildProfile } from "../utils/childProfileStorage";
+
 
 function ParentForm() {
-  const [childAge, setChildAge] = useState("");
   const [question, setQuestion] = useState("");
 
-  const { messages, loading, error, sendMessage, clearChat } = useChat();
+  const {
+    activeConversation,
+    loading,
+    error,
+    sendMessage,
+    clearActiveConversation,
+  } = useChatContext();
+
+ const childProfile = getActiveChildProfile();
 
   const handleSend = async () => {
-    if (!childAge.trim()) {
-      return;
-    }
+    if (!question.trim()) return;
 
-    if (!question.trim()) {
-      return;
-    }
+    const childAge = childProfile
+      ? calculateAge(childProfile.birthDate)
+      : "Unknown";
 
-    await sendMessage(childAge, question);
+    await sendMessage(question);
     setQuestion("");
   };
 
   return (
     <Box>
-      <TextField
-        label="Child Age"
-        value={childAge}
-        onChange={(e) => setChildAge(e.target.value)}
-        placeholder="Example: 4"
-        fullWidth
-        sx={{ mb: 3, maxWidth: 220 }}
-      />
+      <ChildChatHeader childProfile={childProfile} />
 
-      <ChatWindow messages={messages} loading={loading} />
+      <ChatWindow
+        messages={activeConversation?.messages ?? []}
+        loading={loading}
+      />
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -42,11 +48,11 @@ function ParentForm() {
         </Alert>
       )}
 
-      {messages.length > 0 && (
+      {activeConversation?.messages.length > 0 && (
         <Button
           variant="outlined"
           color="secondary"
-          onClick={clearChat}
+          onClick={clearActiveConversation}
           sx={{ mb: 2 }}
         >
           Clear Chat

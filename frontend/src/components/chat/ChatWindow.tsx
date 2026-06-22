@@ -1,5 +1,10 @@
-import { Box, CircularProgress, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography, Chip } from "@mui/material";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
+import RestaurantIcon from "@mui/icons-material/Restaurant";
+import BedtimeIcon from "@mui/icons-material/Bedtime";
+import PaletteIcon from "@mui/icons-material/Palette";
+import AutoStoriesIcon from "@mui/icons-material/AutoStories";
+import SchoolIcon from "@mui/icons-material/School";
 import type { ChatMessage } from "../../types/chat";
 import MessageBubble from "./MessageBubble";
 
@@ -9,6 +14,14 @@ interface Props {
 }
 
 function ChatWindow({ messages, loading }: Props) {
+  const suggestions = [
+    { label: "Healthy Meals", icon: <RestaurantIcon /> },
+    { label: "Sleep", icon: <BedtimeIcon /> },
+    { label: "Activities", icon: <PaletteIcon /> },
+    { label: "Stories", icon: <AutoStoriesIcon /> },
+    { label: "Learning", icon: <SchoolIcon /> },
+  ];
+
   return (
     <Box
       sx={{
@@ -23,13 +36,37 @@ function ChatWindow({ messages, loading }: Props) {
       }}
     >
       {messages.length === 0 ? (
-        <Box textAlign="center" py={8}>
-          <SmartToyIcon color="primary" sx={{ fontSize: 48, mb: 2 }} />
-          <Typography variant="h6" fontWeight={700}>
-            Ask ParentPal anything
+        <Box textAlign="center" py={7}>
+          <SmartToyIcon color="primary" sx={{ fontSize: 54, mb: 2 }} />
+
+          <Typography variant="h5" fontWeight={700} gutterBottom>
+            Welcome to ParentPal
           </Typography>
-          <Typography color="text.secondary">
-            Try bedtime, food, tantrums, learning, or activities.
+
+          <Typography color="text.secondary" sx={{ mb: 3 }}>
+            I can help with everyday parenting questions.
+          </Typography>
+
+          <Stack
+            direction="row"
+            spacing={1}
+            justifyContent="center"
+            flexWrap="wrap"
+            useFlexGap
+          >
+            {suggestions.map((item) => (
+              <Chip
+                key={item.label}
+                icon={item.icon}
+                label={item.label}
+                variant="outlined"
+                color="primary"
+              />
+            ))}
+          </Stack>
+
+          <Typography color="text.secondary" sx={{ mt: 3 }}>
+            Type your first question below.
           </Typography>
         </Box>
       ) : (

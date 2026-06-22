@@ -1,4 +1,5 @@
 export interface ChildProfile {
+  id: string;
   name: string;
   birthDate: string;
   gender: string;

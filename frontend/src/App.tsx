@@ -3,17 +3,23 @@ import AppLayout from "./components/layout/AppLayout";
 import HomePage from "./pages/HomePage";
 import AskPage from "./pages/AskPage";
 import ChildProfilePage from "./pages/ChildProfilePage";
+import { ChildProvider } from "./context/ChildContext";
+import { ChatProvider } from "./context/ChatContext";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<AppLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path="ask" element={<AskPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-        <Route path="child-profile" element={<ChildProfilePage />} />
-      </Route>
-    </Routes>
+    <ChildProvider>
+      <ChatProvider>
+        <Routes>
+          <Route path="/" element={<AppLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="ask" element={<AskPage />} />
+            <Route path="child-profile" element={<ChildProfilePage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
+        </Routes>
+      </ChatProvider>
+    </ChildProvider>
   );
 }
 

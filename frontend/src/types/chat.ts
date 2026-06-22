@@ -7,8 +7,15 @@ export interface ChatMessage {
 
 export interface Conversation {
   id: string;
+
+  // NEW
+  childId: string;
+
   title: string;
+
   createdAt: string;
+
   updatedAt: string;
+
   messages: ChatMessage[];
-}
+}s
