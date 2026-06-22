@@ -10,7 +10,8 @@ export function useStory() {
   const createStory = async (
     theme: string,
     length: string,
-    moral: string
+    moral: string,
+    storyType: string
   ) => {
     setError("");
     setStory("");
@@ -22,6 +23,7 @@ export function useStory() {
         theme,
         length,
         moral,
+        storyType,
         childProfile: getActiveChildProfile(),
       });
 

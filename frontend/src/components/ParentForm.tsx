@@ -4,10 +4,7 @@ import ChatWindow from "./chat/ChatWindow";
 import ChatInput from "./chat/ChatInput";
 import ChildChatHeader from "./chat/ChildChatHeader";
 import { useChatContext } from "../context/ChatContext";
-import type { ChildProfile } from "../types/parent";
-import { calculateAge } from "../utils/calculateAge";
 import { getActiveChildProfile } from "../utils/childProfileStorage";
-
 
 function ParentForm() {
   const [question, setQuestion] = useState("");
@@ -20,16 +17,16 @@ function ParentForm() {
     clearActiveConversation,
   } = useChatContext();
 
- const childProfile = getActiveChildProfile();
+  const childProfile = getActiveChildProfile();
 
   const handleSend = async () => {
-    if (!question.trim()) return;
+    const trimmedQuestion = question.trim();
 
-    const childAge = childProfile
-      ? calculateAge(childProfile.birthDate)
-      : "Unknown";
+    if (!trimmedQuestion) {
+      return;
+    }
 
-    await sendMessage(question);
+    await sendMessage(trimmedQuestion);
     setQuestion("");
   };
 

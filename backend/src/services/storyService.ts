@@ -5,6 +5,7 @@ interface GenerateStoryInput {
   theme: string;
   length: string;
   moral: string;
+  storyType?: string;
   childProfile?: unknown;
 }
 

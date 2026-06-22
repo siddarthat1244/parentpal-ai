@@ -5,50 +5,52 @@ import {
   Button,
   Card,
   CardContent,
-  Chip,
   CircularProgress,
   Divider,
-  MenuItem,
   Paper,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
 
 import AutoStoriesIcon from "@mui/icons-material/AutoStories";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import ReplayIcon from "@mui/icons-material/Replay";
 import StarIcon from "@mui/icons-material/Star";
-import DownloadIcon from "@mui/icons-material/Download";
-import PrintIcon from "@mui/icons-material/Print";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import StopIcon from "@mui/icons-material/Stop";
-import { Snackbar } from "@mui/material";
+import PrintIcon from "@mui/icons-material/Print";
+import DownloadIcon from "@mui/icons-material/Download";
+
+import PageHeader from "../components/ui/PageHeader";
+import ThemeSelector from "../components/story/ThemeSelector";
+import LengthSelector from "../components/story/LengthSelector";
+import MoralSelector from "../components/story/MoralSelector";
+import StoryLoading from "../components/story/StoryLoading";
 
 import { useStory } from "../hooks/useStory";
 import { getActiveChildProfile } from "../utils/childProfileStorage";
 import {
-  downloadStoryAsPdf,
-  printStory,
   saveFavoriteStory,
+  printStory,
+  downloadStoryAsPdf,
 } from "../utils/storyActions";
 import { readStoryAloud, stopReadingAloud } from "../utils/readAloud";
-import { getStoryEmoji } from "../utils/storyCover";
+import StoryTypeSelector from "../components/story/StoryTypeSelector";
 
 function StoriesPage() {
-  const [theme, setTheme] = useState("");
-  const [length, setLength] = useState("Short");
-  const [moral, setMoral] = useState("");
+  const activeChild = getActiveChildProfile();
+
+  const [theme, setTheme] = useState("Space");
+  const [length, setLength] = useState("Medium");
+  const [moral, setMoral] = useState("Kindness");
+  const [customTheme, setCustomTheme] = useState("");
+  const [storyType, setStoryType] = useState("Imagination");
 
   const { story, loading, error, createStory } = useStory();
-  const activeChild = getActiveChildProfile();
 
   const storyTitle = activeChild
     ? `${activeChild.name}'s Bedtime Story`
     : "ParentPal Bedtime Story";
 
-  const storyEmoji = getStoryEmoji(theme || storyTitle);
-  const [favoriteMessage, setFavoriteMessage] = useState("");
   const currentStory = {
     id: crypto.randomUUID(),
     title: storyTitle,
@@ -57,150 +59,95 @@ function StoriesPage() {
     createdAt: new Date().toISOString(),
   };
 
-  const handleGenerate = async () => {
-    await createStory(theme || "Magical bedtime adventure", length, moral);
-  };
-  const handleSaveFavorite = () => {
-  const saved = saveFavoriteStory(currentStory);
+ const handleGenerate = async () => {
+  const finalTheme = theme === "Custom" ? customTheme.trim() : theme;
 
-  setFavoriteMessage(
-    saved ? "Story saved to favorites." : "Story is already in favorites."
-  );
+  if (!finalTheme) {
+    return;
+  }
+
+  await createStory(finalTheme, length, moral,storyType);
 };
 
   return (
     <Box>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
-        Bedtime Story Generator
-      </Typography>
-
-      <Typography color="text.secondary" sx={{ mb: 3 }}>
-        Create a personalized story using the active child profile.
-      </Typography>
+      <PageHeader
+        title="Story Creator"
+        subtitle={`Create a magical bedtime adventure${
+          activeChild ? ` for ${activeChild.name}` : ""
+        }`}
+      />
 
       <Card
         sx={{
-          borderRadius: 4,
           mb: 4,
-          background: "linear-gradient(135deg, #EEF2FF, #F5F3FF)",
+          borderRadius: 6,
+          background: "linear-gradient(135deg,#EEF2FF,#F5F3FF)",
         }}
       >
-        <CardContent sx={{ p: 4 }}>
-          <Stack direction="row" spacing={2} alignItems="center">
-            <AutoStoriesIcon color="primary" sx={{ fontSize: 48 }} />
+        <CardContent sx={{ p: 5 }}>
+          <StoryTypeSelector value={storyType} onChange={setStoryType} />
+          <ThemeSelector
+            value={theme}
+            customTheme={customTheme}
+            onChange={setTheme}
+            onCustomThemeChange={setCustomTheme}
+            />
 
-            <Box>
-              <Typography variant="h5" fontWeight={800}>
-                Create Tonight&apos;s Story
-              </Typography>
+          <LengthSelector value={length} onChange={setLength} />
 
-              <Typography color="text.secondary">
-                {activeChild
-                  ? `Personalized for ${activeChild.name}`
-                  : "Select or create a child profile for best results"}
-              </Typography>
-            </Box>
-          </Stack>
+          <MoralSelector value={moral} onChange={setMoral} />
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {error}
+            </Alert>
+          )}
+
+          <Button
+            fullWidth
+            size="large"
+            variant="contained"
+            startIcon={<AutoStoriesIcon />}
+            disabled={loading}
+            onClick={handleGenerate}
+            sx={{
+              mt: 2,
+              py: 2,
+              borderRadius: 4,
+              fontSize: 18,
+              fontWeight: 700,
+            }}
+          >
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              "✨ Create Tonight's Story"
+            )}
+          </Button>
         </CardContent>
       </Card>
 
-      <Card sx={{ borderRadius: 4 }}>
-        <CardContent sx={{ p: 4 }}>
-          <Stack spacing={3}>
-            <TextField
-              label="Story Theme"
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
-              placeholder="Example: Space adventure"
-              fullWidth
-            />
+      {loading && <StoryLoading />}
 
-            <TextField
-              select
-              label="Story Length"
-              value={length}
-              onChange={(e) => setLength(e.target.value)}
-              fullWidth
-            >
-              <MenuItem value="Short">Short - 2 minutes</MenuItem>
-              <MenuItem value="Medium">Medium - 5 minutes</MenuItem>
-              <MenuItem value="Long">Long - 8 minutes</MenuItem>
-            </TextField>
-
-            <TextField
-              label="Moral Lesson"
-              value={moral}
-              onChange={(e) => setMoral(e.target.value)}
-              placeholder="Example: Be kind, share toys, try new foods"
-              fullWidth
-            />
-
-            {error && <Alert severity="error">{error}</Alert>}
-
-            <Button
-              variant="contained"
-              size="large"
-              onClick={handleGenerate}
-              disabled={loading}
-            >
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                "✨ Generate Story"
-              )}
-            </Button>
-          </Stack>
-        </CardContent>
-      </Card>
-
-      {story && (
+      {story && !loading && (
         <Paper
           elevation={3}
           sx={{
             mt: 4,
             p: 4,
-            borderRadius: 4,
-            background: "linear-gradient(180deg, #FFFFFF 0%, #FFFBEB 100%)",
+            borderRadius: 6,
+            background: "linear-gradient(180deg,#FFFFFF,#FFFBEB)",
           }}
         >
           <Stack spacing={2}>
             <Stack direction="row" spacing={1} alignItems="center">
               <StarIcon color="warning" />
-              <Typography variant="h5" fontWeight={800}>
+
+              <Typography variant="h5" fontWeight={900}>
                 Tonight&apos;s Story
               </Typography>
             </Stack>
-
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-              <Chip label={length} color="primary" />
-              {activeChild && <Chip label={activeChild.name} />}
-              {moral && <Chip label={`Moral: ${moral}`} variant="outlined" />}
-            </Stack>
-
-            <Box
-              sx={{
-                height: 220,
-                borderRadius: 4,
-                background: "linear-gradient(135deg, #4F46E5, #7C3AED)",
-                color: "white",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-                p: 3,
-              }}
-            >
-              <Typography sx={{ fontSize: 64 }}>{storyEmoji}</Typography>
-
-              <Typography variant="h4" fontWeight={900}>
-                {storyTitle}
-              </Typography>
-
-              <Typography sx={{ opacity: 0.9, mt: 1 }}>
-                A personalized story by ParentPal AI
-              </Typography>
-            </Box>
 
             <Divider />
 
@@ -216,11 +163,15 @@ function StoriesPage() {
 
             <Divider />
 
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={2}
+              flexWrap="wrap"
+            >
               <Button
                 variant="outlined"
                 startIcon={<FavoriteIcon />}
-                onClick={handleSaveFavorite}
+                onClick={() => saveFavoriteStory(currentStory)}
               >
                 Save Favorite
               </Button>
@@ -257,24 +208,10 @@ function StoriesPage() {
               >
                 Download PDF
               </Button>
-
-              <Button
-                variant="outlined"
-                startIcon={<ReplayIcon />}
-                onClick={handleGenerate}
-              >
-                Generate Another
-              </Button>
             </Stack>
           </Stack>
         </Paper>
       )}
-      <Snackbar
-        open={Boolean(favoriteMessage)}
-        autoHideDuration={3000}
-        onClose={() => setFavoriteMessage("")}
-        message={favoriteMessage}
-/>
     </Box>
   );
 }

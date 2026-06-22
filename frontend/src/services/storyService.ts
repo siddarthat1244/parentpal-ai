@@ -5,6 +5,7 @@ export interface StoryRequest {
   theme: string;
   length: string;
   moral: string;
+  storyType?: string;
   childProfile?: ChildProfile | null;
 }
 

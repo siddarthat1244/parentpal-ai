@@ -10,6 +10,7 @@ export async function generateStoryController(
       theme,
       length,
       moral,
+      storyType,
       childProfile,
     } = req.body;
 
@@ -17,6 +18,7 @@ export async function generateStoryController(
       theme,
       length,
       moral,
+      storyType,
       childProfile,
     });
 

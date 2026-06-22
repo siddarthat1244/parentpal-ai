@@ -25,7 +25,7 @@ function ChatInput({ value, loading, onChange, onSend }: Props) {
         size="large"
         endIcon={<SendIcon />}
         onClick={onSend}
-        disabled={loading}
+        disabled={loading || !value.trim()}
         sx={{ minWidth: 140 }}
       >
         Send

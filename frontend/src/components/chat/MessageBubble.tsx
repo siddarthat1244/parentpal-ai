@@ -11,22 +11,14 @@ function MessageBubble({ message }: Props) {
   const isUser = message.role === "user";
 
   return (
-    <Box
-      display="flex"
-      justifyContent={isUser ? "flex-end" : "flex-start"}
-      mb={2}
-    >
+    <Box display="flex" justifyContent={isUser ? "flex-end" : "flex-start"} mb={2}>
       <Box
         display="flex"
         flexDirection={isUser ? "row-reverse" : "row"}
         gap={1.5}
         maxWidth="80%"
       >
-        <Avatar
-          sx={{
-            bgcolor: isUser ? "secondary.main" : "primary.main",
-          }}
-        >
+        <Avatar sx={{ bgcolor: isUser ? "secondary.main" : "primary.main" }}>
           {isUser ? <PersonIcon /> : <SmartToyIcon />}
         </Avatar>
 
@@ -37,21 +29,19 @@ function MessageBubble({ message }: Props) {
             borderRadius: 3,
             bgcolor: isUser ? "primary.main" : "background.paper",
             color: isUser ? "white" : "text.primary",
+            minWidth: 160,
           }}
         >
-         <Typography
-            variant="caption"
-            sx={{
-                display: "block",
-                mt: 1,
-                opacity: 0.7,
-            }}
-            >
+          <Typography sx={{ whiteSpace: "pre-line" }}>
+            {message.text || "Message text missing"}
+          </Typography>
+
+          <Typography variant="caption" sx={{ display: "block", mt: 1, opacity: 0.7 }}>
             {new Date(message.createdAt).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
             })}
-        </Typography>
+          </Typography>
         </Paper>
       </Box>
     </Box>
