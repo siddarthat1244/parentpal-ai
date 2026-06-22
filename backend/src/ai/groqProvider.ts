@@ -21,8 +21,12 @@ export class GroqProvider implements AIProvider {
 
   async generateParentAnswer(
     childAge: string,
-    question: string
+    question: string,
+    childProfile?: unknown
   ): Promise<string> {
+    const profileContext = childProfile
+    ? `Child profile: ${JSON.stringify(childProfile)}`
+    : "No child profile saved.";
     const completion = await this.client.chat.completions.create({
       model: process.env.GROQ_MODEL || "llama-3.1-8b-instant",
       messages: [
@@ -41,7 +45,12 @@ Rules:
         },
         {
           role: "user",
-          content: `Child age: ${childAge}\nParent question: ${question}`,
+          content: `
+          ${profileContext}
+
+          Child age entered in chat: ${childAge}
+          Parent question: ${question}
+          `,
         },
       ],
       temperature: 0.7,

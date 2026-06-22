@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { ChildProfile } from "../types/parent";
 import {
   Avatar,
   Box,
@@ -20,12 +21,27 @@ interface ChatMessage {
 }
 
 function ParentForm() {
+  const CHAT_STORAGE_KEY = "parentpal_chat_messages";
   const [childAge, setChildAge] = useState("");
   const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+  const savedMessages = localStorage.getItem(CHAT_STORAGE_KEY);
+  return savedMessages ? JSON.parse(savedMessages) : [];
+});
+  const getChildProfile = (): ChildProfile | null => {
+    const savedProfile = localStorage.getItem("parentpal_child_profile");
 
+    if (!savedProfile) {
+      return null;
+    }
+
+    return JSON.parse(savedProfile) as ChildProfile;
+    };
+  useEffect(() => {
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+  }, [messages]);
   const handleAskAssistant = async () => {
     setError("");
 
@@ -51,9 +67,10 @@ function ParentForm() {
       setLoading(true);
 
       const response = await askParentAssistant({
-        childAge,
-        question,
-      });
+      childAge,
+      question,
+      childProfile: getChildProfile(),
+    });
 
       const assistantMessage: ChatMessage = {
         role: "assistant",
@@ -90,7 +107,16 @@ function ParentForm() {
           backgroundColor: "#F8FAFC",
           border: "1px solid #E5E7EB",
         }}
-      >
+        > {messages.length > 0 && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => setMessages([])}
+            sx={{ mb: 2 }}
+          >
+            Clear Chat
+          </Button>
+        )}
         {messages.length === 0 ? (
           <Box textAlign="center" py={8}>
             <SmartToyIcon color="primary" sx={{ fontSize: 48, mb: 2 }} />

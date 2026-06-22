@@ -57,10 +57,10 @@ function Sidebar() {
           <ListItemText primary="Meal Planner" />
         </ListItemButton>
 
-        <ListItemButton>
-          <ListItemIcon><ChildCareIcon /></ListItemIcon>
-          <ListItemText primary="Child Profile" />
-        </ListItemButton>
+        <ListItemButton component={Link} to="/child-profile">
+        <ListItemIcon><ChildCareIcon /></ListItemIcon>
+        <ListItemText primary="Child Profile" />
+      </ListItemButton>
       </List>
     </Drawer>
   );

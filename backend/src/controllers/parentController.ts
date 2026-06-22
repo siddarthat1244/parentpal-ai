@@ -3,7 +3,7 @@ import { generateParentAnswer } from "../services/parentService";
 
 export const askParentAssistant = async (req: Request, res: Response) => {
   try {
-    const { childAge, question } = req.body;
+    const { childAge, question, childProfile } = req.body;
 
     if (!childAge || !question) {
       return res.status(400).json({
@@ -11,7 +11,7 @@ export const askParentAssistant = async (req: Request, res: Response) => {
       });
     }
 
-    const answer = await generateParentAnswer(childAge, question);
+    const answer = await generateParentAnswer(childAge, question, childProfile);
 
     return res.json({ answer });
   } catch (error) {

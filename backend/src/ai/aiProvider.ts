@@ -1,3 +1,7 @@
 export interface AIProvider {
-  generateParentAnswer(childAge: string, question: string): Promise<string>;
+  generateParentAnswer(
+    childAge: string,
+    question: string,
+    childProfile?: unknown
+  ): Promise<string>;
 }
